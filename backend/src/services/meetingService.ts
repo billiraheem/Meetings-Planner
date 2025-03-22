@@ -19,6 +19,8 @@ export const createMeeting = async (data: any) => {
 };
 
 export const updateMeeting = async (id: string, data: any) => {
+    debugger
+    console.log(id, data)
     return await Meeting.findByIdAndUpdate(id, data, { new: true });
 };
 

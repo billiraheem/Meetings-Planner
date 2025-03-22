@@ -2,8 +2,8 @@ import { IncomingMessage, ServerResponse } from 'http';
 import { getMeetings, createMeeting, updateMeeting, deleteMeeting, getMeeting } from '../services/meetingService';
 
 export const handleGetMeetings = async (req: IncomingMessage, res: ServerResponse, query: URLSearchParams) => {
-    const page = parseInt(query.get('page') || '1', 10);
-    const limit = parseInt(query.get('limit') || '10', 10);
+    const page = parseInt(query.get('page_number') || '1', 10);
+    const limit = parseInt(query.get('page_size') || '10', 10);
     const filter = query.get('filter') || '';
 
     try {
@@ -38,10 +38,12 @@ export const handleCreateMeeting = async (req: IncomingMessage, res: ServerRespo
 
 export const handleUpdateMeeting = async (req: IncomingMessage, res: ServerResponse, id: string, body: string) => {
     try {
+        debugger
         const updatedMeeting = await updateMeeting(id, JSON.parse(body));
-        if (!updatedMeeting) {
-            return sendResponse(res, 404, { error: 'Meeting not found' })
-        };
+        console.log(updatedMeeting)
+        // if (!updatedMeeting) {
+            // return sendResponse(res, 404, { error: 'Meeting not found' })
+        // };
         sendResponse(res, 200, updatedMeeting);
     } catch (error) {
         sendResponse(res, 400, { error: 'Invalid request' });

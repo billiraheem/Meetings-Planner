@@ -1,0 +1,178 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+/* body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+} */
+
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+}
+
+.nav-link {
+  text-decoration: none;
+  margin-right: 20px;
+  color: white;
+}
+
+.navbar {
+  background-color: #f706d2;
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.meeting-card,
+.meeting-details,
+.meeting-form,
+.meeting-create {
+  background-color: rgb(254, 176, 215);
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 600px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.meeting-card h3,
+.meeting-details h2,
+.meeting-create h2 {
+  margin-bottom: 15px;
+}
+
+.meeting-card p,
+.meeting-details p {
+  margin-bottom: 10px;
+}
+
+.actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.btn,
+button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  background-color: #d7379f;
+  color: white;
+  cursor: pointer;
+}
+
+.btn:disabled,
+button:disabled {
+  background-color: grey;
+  cursor: not-allowed;
+}
+
+.menu-container {
+  position: relative;
+}
+
+.menu-button {
+  position: absolute;
+  top: -180px; /* Adjust as needed */
+  right: 5px; /* Adjust as needed */
+  background: #f706d2;
+  border: none;
+  font-size: 1.5em;
+  cursor: pointer;
+}
+
+.menu-drop {
+  position: absolute;
+  top: -130px; /* Adjust as needed */
+  right: 0;
+  background-color: white;
+  border: 1px solid #f706d2;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex; /* Use flexbox for spacing */
+  flex-direction: column;
+  gap: 10px; /* Add space between buttons */
+  padding: 10px;
+  z-index: 10;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
