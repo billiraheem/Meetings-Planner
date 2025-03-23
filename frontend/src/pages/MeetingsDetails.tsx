@@ -48,10 +48,10 @@ export const MeetingDetails = () => {
     }
   };
 
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleString(); // Format date and time
-  };
+  // const formatDate = (dateString: string): string => {
+  //   const date = new Date(dateString);
+  //   return date.toLocaleString(); // Format date and time
+  // };
 
   if (!meeting) return <p>Loading meeting details...</p>;
 
@@ -86,8 +86,8 @@ export const MeetingDetails = () => {
       ) : (
         <div>
           <p><strong>Title:</strong> {meeting.title}</p>
-          <p><strong>Start Time:</strong> {formatDate(meeting.startTime)}</p>
-          <p><strong>End Time:</strong> {formatDate(meeting.endTime)}</p>
+          <p><strong>Start Time:</strong> {new Date(meeting.startTime).toLocaleString()}</p>
+          <p><strong>End Time:</strong> {new Date(meeting.endTime).toLocaleString()}</p>
           <p><strong>Participants:</strong> {meeting.participants.join(', ')}</p>
         </div>
       )}

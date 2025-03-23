@@ -36,67 +36,33 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.server = void 0;
 var http_1 = require("http");
 var url_1 = require("url");
 var DB_1 = require("../config/DB");
-var meetingController_1 = require("../controllers/meetingController");
+var CORS_1 = require("../middlewares/CORS");
+var route_1 = require("../routes/route");
 // Connect to MongoDB
 (0, DB_1.default)();
 var server = (0, http_1.createServer)(function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var method, url, parsedUrl, pathname, query, body, id;
+    var method, url, parsedUrl, pathname, query, body;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
+                if ((0, CORS_1.corsMiddleware)(req, res))
+                    return [2 /*return*/];
                 method = req.method, url = req.url;
                 parsedUrl = new url_1.URL(url || '', "http://".concat(req.headers.host));
                 pathname = parsedUrl.pathname;
                 query = parsedUrl.searchParams;
-                res.setHeader('Access-Control-Allow-Origin', '*');
-                res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-                res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-                if (method === 'OPTIONS') {
-                    res.writeHead(204).end();
-                    return [2 /*return*/];
-                }
                 body = '';
                 req.on('data', function (chunk) { return (body += chunk.toString()); });
                 return [4 /*yield*/, new Promise(function (resolve) { return req.on('end', resolve); })];
             case 1:
                 _a.sent();
-                if (pathname === '/api/meetings') {
-                    switch (method) {
-                        case 'GET':
-                            (0, meetingController_1.handleGetMeetings)(req, res, query);
-                            break;
-                        case 'POST':
-                            (0, meetingController_1.handleCreateMeeting)(req, res, body);
-                            break;
-                        default:
-                            res.writeHead(405).end(JSON.stringify({ error: 'Method Not Allowed' }));
-                    }
-                }
-                else if (pathname.startsWith('/api/meetings')) {
-                    id = pathname.split('/')[3];
-                    switch (method) {
-                        case 'GET':
-                            (0, meetingController_1.handleGetMeeting)(req, res, id);
-                            break;
-                        case 'PUT':
-                            (0, meetingController_1.handleUpdateMeeting)(req, res, id, body);
-                            break;
-                        case 'DELETE':
-                            (0, meetingController_1.handleDeleteMeeting)(req, res, id);
-                            break;
-                        default:
-                            res.writeHead(405).end(JSON.stringify({ error: 'Method Not Allowed' }));
-                    }
-                }
-                else {
-                    res.writeHead(404).end(JSON.stringify({ error: 'Not Found' }));
-                }
+                (0, route_1.routeHandler)(req, res, body);
                 return [2 /*return*/];
         }
     });
 }); });
-var PORT = process.env.PORT || 8080;
-server.listen(PORT, function () { return console.log("Server running on http://localhost:".concat(PORT)); });
+exports.server = server;

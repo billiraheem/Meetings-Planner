@@ -38,13 +38,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleDeleteMeeting = exports.handleUpdateMeeting = exports.handleCreateMeeting = exports.handleGetMeeting = exports.handleGetMeetings = void 0;
 var meetingService_1 = require("../services/meetingService");
+var sendResponse_1 = require("../middlewares/sendResponse");
 var handleGetMeetings = function (req, res, query) { return __awaiter(void 0, void 0, void 0, function () {
     var page, limit, filter, result, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                page = parseInt(query.get('page') || '1', 10);
-                limit = parseInt(query.get('limit') || '10', 10);
+                page = parseInt(query.get('page_number') || '1', 10);
+                limit = parseInt(query.get('page_size') || '10', 10);
                 filter = query.get('filter') || '';
                 _a.label = 1;
             case 1:
@@ -52,11 +53,11 @@ var handleGetMeetings = function (req, res, query) { return __awaiter(void 0, vo
                 return [4 /*yield*/, (0, meetingService_1.getMeetings)(page, limit, filter)];
             case 2:
                 result = _a.sent();
-                sendResponse(res, 200, result);
+                (0, sendResponse_1.sendResponse)(res, 200, result);
                 return [3 /*break*/, 4];
             case 3:
                 error_1 = _a.sent();
-                sendResponse(res, 500, { error: 'Server Error' });
+                (0, sendResponse_1.sendResponse)(res, 500, { error: 'Server Error' });
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];
         }
@@ -73,14 +74,14 @@ var handleGetMeeting = function (req, res, id) { return __awaiter(void 0, void 0
             case 1:
                 meeting = _a.sent();
                 if (!meeting) {
-                    return [2 /*return*/, sendResponse(res, 404, { error: 'Meeting not found' })];
+                    return [2 /*return*/, (0, sendResponse_1.sendResponse)(res, 404, { error: 'Meeting not found' })];
                 }
                 ;
-                sendResponse(res, 200, meeting);
+                (0, sendResponse_1.sendResponse)(res, 200, meeting);
                 return [3 /*break*/, 3];
             case 2:
                 error_2 = _a.sent();
-                sendResponse(res, 400, { error: 'Invalid request' });
+                (0, sendResponse_1.sendResponse)(res, 400, { error: 'Invalid request' });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }
@@ -93,15 +94,22 @@ var handleCreateMeeting = function (req, res, body) { return __awaiter(void 0, v
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
+                if (!body) {
+                    return [2 /*return*/, (0, sendResponse_1.sendResponse)(res, 400, { error: 'Request body is missing' })];
+                }
                 data = JSON.parse(body);
+                if (!data.title || !data.startTime || !data.endTime || !data.participants) {
+                    return [2 /*return*/, (0, sendResponse_1.sendResponse)(res, 400, { error: 'All fields are required' })];
+                }
                 return [4 /*yield*/, (0, meetingService_1.createMeeting)(data)];
             case 1:
                 newMeeting = _a.sent();
-                sendResponse(res, 201, newMeeting);
+                (0, sendResponse_1.sendResponse)(res, 201, newMeeting);
                 return [3 /*break*/, 3];
             case 2:
                 error_3 = _a.sent();
-                sendResponse(res, 400, { error: 'Invalid request' });
+                console.error('Error in handleCreateMeeting:', error_3);
+                (0, sendResponse_1.sendResponse)(res, 400, { error: 'Invalid request' });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }
@@ -109,23 +117,44 @@ var handleCreateMeeting = function (req, res, body) { return __awaiter(void 0, v
 }); };
 exports.handleCreateMeeting = handleCreateMeeting;
 var handleUpdateMeeting = function (req, res, id, body) { return __awaiter(void 0, void 0, void 0, function () {
-    var updatedMeeting, error_4;
+    var parsedBody, updatedMeeting, error_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, (0, meetingService_1.updateMeeting)(id, JSON.parse(body))];
+                debugger;
+                // const updatedMeeting = await updateMeeting(id, JSON.parse(body));
+                // console.log(updatedMeeting)
+                // // if (!updatedMeeting) {
+                //     // return sendResponse(res, 404, { error: 'Meeting not found' })
+                // // };
+                console.log('PUT Request Received');
+                console.log('Received ID:', id);
+                console.log('Raw Body:', body);
+                if (!id) {
+                    return [2 /*return*/, (0, sendResponse_1.sendResponse)(res, 400, { error: 'Meeting ID is required' })];
+                }
+                if (!body) {
+                    return [2 /*return*/, (0, sendResponse_1.sendResponse)(res, 400, { error: 'Request body is missing' })];
+                }
+                parsedBody = JSON.parse(body);
+                if (Object.keys(parsedBody).length === 0) {
+                    return [2 /*return*/, (0, sendResponse_1.sendResponse)(res, 400, { error: 'No valid fields provided for update' })];
+                }
+                return [4 /*yield*/, (0, meetingService_1.updateMeeting)(id, parsedBody)];
             case 1:
                 updatedMeeting = _a.sent();
+                console.log('Updated Meeting:', updatedMeeting);
+                console.log(updatedMeeting);
                 if (!updatedMeeting) {
-                    return [2 /*return*/, sendResponse(res, 404, { error: 'Meeting not found' })];
+                    console.log('Meeting Not Found!');
+                    return [2 /*return*/, (0, sendResponse_1.sendResponse)(res, 404, { error: 'Meeting not found' })];
                 }
-                ;
-                sendResponse(res, 200, updatedMeeting);
+                (0, sendResponse_1.sendResponse)(res, 200, updatedMeeting);
                 return [3 /*break*/, 3];
             case 2:
                 error_4 = _a.sent();
-                sendResponse(res, 400, { error: 'Invalid request' });
+                (0, sendResponse_1.sendResponse)(res, 400, { error: 'Invalid request' });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }
@@ -142,22 +171,20 @@ var handleDeleteMeeting = function (req, res, id) { return __awaiter(void 0, voi
             case 1:
                 deletedMeeting = _a.sent();
                 if (!deletedMeeting) {
-                    return [2 /*return*/, sendResponse(res, 404, { error: 'Meeting not found' })];
+                    return [2 /*return*/, (0, sendResponse_1.sendResponse)(res, 404, { error: 'Meeting not found' })];
                 }
                 ;
-                sendResponse(res, 204, null);
+                (0, sendResponse_1.sendResponse)(res, 204, null);
                 return [3 /*break*/, 3];
             case 2:
                 error_5 = _a.sent();
-                sendResponse(res, 400, { error: 'Invalid request' });
+                (0, sendResponse_1.sendResponse)(res, 400, { error: 'Invalid request' });
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }
     });
 }); };
 exports.handleDeleteMeeting = handleDeleteMeeting;
-// Helper function to send response
-var sendResponse = function (res, statusCode, data) {
-    res.writeHead(statusCode, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(data));
-};
+// function sendResponse(res: ServerResponse<IncomingMessage>, arg1: number, arg2: { error: string; }) {
+//     throw new Error('Function not implemented.');
+// }

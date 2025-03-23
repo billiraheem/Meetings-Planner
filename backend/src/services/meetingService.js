@@ -37,12 +37,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteMeeting = exports.updateMeeting = exports.createMeeting = exports.getMeeting = exports.getMeetings = void 0;
+var mongoose_1 = require("mongoose");
 var meeting_1 = require("../models/meeting");
+// import Update from '../models/update';
 var getMeetings = function (page, limit, filter) { return __awaiter(void 0, void 0, void 0, function () {
-    var query, meetings, totalCount;
+    var skip, query, meetings, totalCount;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
+                skip = (page - 1) * limit;
                 query = filter ? { title: { $regex: filter, $options: 'i' } } : {};
                 return [4 /*yield*/, meeting_1.default.find(query)
                         .skip((page - 1) * limit)
@@ -52,7 +55,9 @@ var getMeetings = function (page, limit, filter) { return __awaiter(void 0, void
                 return [4 /*yield*/, meeting_1.default.countDocuments(query)];
             case 2:
                 totalCount = _a.sent();
-                return [2 /*return*/, { meetings: meetings, totalCount: totalCount }];
+                return [2 /*return*/, { meetings: meetings, "Total meetings": totalCount,
+                        "Page number": page,
+                        "Total meetings per page": limit, }];
         }
     });
 }); };
@@ -67,22 +72,47 @@ var getMeeting = function (id) { return __awaiter(void 0, void 0, void 0, functi
 }); };
 exports.getMeeting = getMeeting;
 var createMeeting = function (data) { return __awaiter(void 0, void 0, void 0, function () {
-    var meeting;
+    var meeting, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
+                _a.trys.push([0, 2, , 3]);
+                console.log('Creating Meeting:', data);
                 meeting = new meeting_1.default(data);
                 return [4 /*yield*/, meeting.save()];
             case 1: return [2 /*return*/, _a.sent()];
+            case 2:
+                error_1 = _a.sent();
+                console.error('Error creating meeting:', error_1);
+                throw new Error('Failed to create meeting');
+            case 3: return [2 /*return*/];
         }
     });
 }); };
 exports.createMeeting = createMeeting;
 var updateMeeting = function (id, data) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, meeting_1.default.findByIdAndUpdate(id, data, { new: true })];
-            case 1: return [2 /*return*/, _a.sent()];
+    var allowedFields, filteredData, _i, _a, key;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                debugger;
+                console.log(id, data);
+                if (!mongoose_1.default.Types.ObjectId.isValid(id)) {
+                    throw new Error('Invalid Meeting ID');
+                }
+                allowedFields = ['title', 'startTime', 'endTime', 'participants'];
+                filteredData = {};
+                for (_i = 0, _a = Object.keys(data); _i < _a.length; _i++) {
+                    key = _a[_i];
+                    if (allowedFields.includes(key) && data[key] !== undefined) {
+                        filteredData[key] = data[key];
+                    }
+                }
+                if (Object.keys(filteredData).length === 0) {
+                    throw new Error('No valid fields provided for update.');
+                }
+                return [4 /*yield*/, meeting_1.default.findByIdAndUpdate(id, { $set: filteredData }, { new: true, runValidators: true })];
+            case 1: return [2 /*return*/, _b.sent()];
         }
     });
 }); };

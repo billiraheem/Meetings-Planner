@@ -14,16 +14,19 @@ export const NavBar: React.FC<NavBarProps> = ({ onSearch }) => {
       <Link to="/" className="nav-link">
         🏠 Home
       </Link>
+
       <CustomInput
         label="Search"
         type="text"
         placeholder="🔍 Search Meetings..."
         value={searchTerm}
         onChange={(e) => {
-          setSearchTerm(e.target.value);
-          onSearch(e.target.value);
+          const trimmedValue = e.target.value.trim();
+          setSearchTerm(trimmedValue);
+          onSearch(trimmedValue);
         }}
       />
+
       <Link to="/create" className="nav-link">
         ➕ Create
       </Link>

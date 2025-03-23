@@ -117,7 +117,7 @@ button:disabled {
 
 .menu-button {
   position: absolute;
-  top: -180px; /* Adjust as needed */
+  top: -100px; /* Adjust as needed */
   right: 5px; /* Adjust as needed */
   background: #f706d2;
   border: none;
@@ -127,7 +127,7 @@ button:disabled {
 
 .menu-drop {
   position: absolute;
-  top: -130px; /* Adjust as needed */
+  top: -100px; /* Adjust as needed */
   right: 0;
   background-color: white;
   border: 1px solid #f706d2;

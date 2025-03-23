@@ -4,13 +4,13 @@ import { CustomButton } from './UI/Button';
 import { CustomInput } from './UI/Input';
 import { useNavigate } from 'react-router-dom';
 
-interface Props {
+interface MeetingCardProps {
   meeting: Meeting;
   onDelete: (id: string) => void;
   onEdit: () => void;
 }
 
-export const MeetingCard = ({ meeting, onDelete, onEdit }: Props) => {
+export const MeetingCard = ({ meeting, onDelete, onEdit }: MeetingCardProps) => {
   const [showMenu, setShowMenu] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [updatedMeeting, setUpdatedMeeting] = useState<Meeting>({ ...meeting });
@@ -27,17 +27,17 @@ export const MeetingCard = ({ meeting, onDelete, onEdit }: Props) => {
     }
   };
 
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleString(); // Format date and time
-  };
+  // const formatDate = (dateString: string): string => {
+  //   const date = new Date(dateString);
+  //   return date.toLocaleString(); // Format date and time
+  // };
 
-  const handleCardClick = () => {
-    navigate(`/meeting/${meeting.id}`); // Navigate to MeetingDetails
-  };
+  // const handleCardClick = () => {
+  //   navigate(`/meeting/${meeting.id}`); // Navigate to MeetingDetails
+  // };
 
   return (
-    <div className="meeting-card">
+    <div className="meeting-card" >
       {isEditing ? (
         <div> 
             <CustomInput 
@@ -64,13 +64,15 @@ export const MeetingCard = ({ meeting, onDelete, onEdit }: Props) => {
             />
         </div> 
       ) : (
-        <div> 
-            <h3>{meeting.title}</h3>
-            <p>🕒 {formatDate(meeting.startTime)} - {formatDate(meeting.endTime)}</p>
-            <p>👥 {meeting.participants.join(', ')}</p>
+        <div > 
+            <h3 onClick={() => navigate(`/meeting/${meeting.id}`)} style={{ cursor: 'pointer', color: 'white' }}>
+              {meeting.title}
+            </h3>
+            <p>🕒 {new Date(meeting.startTime).toLocaleString()} - {new Date(meeting.endTime).toLocaleString()}</p>
+            {/* <p>👥 {meeting.participants.join(', ')}</p> */}
         </div>
       )}
-      <p>🕒 {meeting.startTime} - {meeting.endTime}</p>
+      {/* <p>🕒 {meeting.startTime} - {meeting.endTime}</p> */}
 
       <div className="menu-container">
         <CustomButton 
