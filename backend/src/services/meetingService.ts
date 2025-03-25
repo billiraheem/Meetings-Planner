@@ -1,18 +1,18 @@
 import mongoose from 'mongoose';
 import Meeting from '../models/meeting';
-// import Update from '../models/update';
 
 export const getMeetings = async (page: number, limit: number, filter: string) => {
     const skip = (page - 1) * limit;
     const query = filter ? { title: { $regex: filter, $options: 'i' } } : {};
     const meetings = await Meeting.find(query)
-                                  .skip((page - 1) * limit)
+                                  .skip(skip)
                                   .limit(limit);
+    console.log("Skip value:", skip);
     const totalCount = await Meeting.countDocuments(query);
     return { meetings, 
-        "Total meetings": totalCount,
-        "Page number": page,
-        "Total meetings per page": limit,
+        totalCount,
+        "totalPages": Math.ceil(totalCount / limit),
+        "currentPage": page 
     };
 };
 
@@ -29,8 +29,6 @@ export const createMeeting = async (data: any) => {
         console.error('Error creating meeting:', error);
         throw new Error('Failed to create meeting');
     }
-    // const meeting = new Meeting(data);
-    // return await meeting.save();
 };
 
 export const updateMeeting = async (id: string, data: Partial<Record<string, any>>) => {

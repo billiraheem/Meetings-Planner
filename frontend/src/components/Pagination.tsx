@@ -1,4 +1,4 @@
-import { CustomButton } from "./UI/Button";
+import { CustomButton } from "./Button";
 
 interface PaginationProps {
     currentPage: number;
@@ -27,7 +27,3 @@ interface PaginationProps {
       </div>
     );
   };
-
-//   <button disabled={currentPage === 1} onClick={() => onPageChange(currentPage - 1)}>⬅ Prev</button>
-//         <span>Page {currentPage} of {totalPages}</span>
-//         <button disabled={currentPage === totalPages} onClick={() => onPageChange(currentPage + 1)}>Next ➡</button>

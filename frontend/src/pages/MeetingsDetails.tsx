@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Meeting, meetingAPI } from '../services/api';
-import { CustomButton } from '../components/UI/Button';
-import { CustomInput } from '../components/UI/Input';
-
+import { Meeting, meetingAPI } from '../APIs/meetingsAPI';
+import { CustomButton } from '../components/Button';
+import { CustomInput } from '../components/Input';
 
 
 export const MeetingDetails = () => {
@@ -12,10 +11,22 @@ export const MeetingDetails = () => {
   const [meeting, setMeeting] = useState<Meeting | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [updatedMeeting, setUpdatedMeeting] = useState<Meeting | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+  const [messageType, setMessageType] = useState<'success' | 'error' | null>(null);
 
   useEffect(() => {
     fetchMeeting();
   }, []);
+
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage(null);
+        setMessageType(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
 
   const fetchMeeting = async () => {
     try {
@@ -24,6 +35,8 @@ export const MeetingDetails = () => {
       setUpdatedMeeting(data);
     } catch (error) {
       console.error('Error fetching meeting:', error);
+      setMessage('Error fetching meeting');
+      setMessageType('error');
     }
   };
 
@@ -33,31 +46,39 @@ export const MeetingDetails = () => {
         await meetingAPI.update(id!, updatedMeeting);
         setMeeting(updatedMeeting);
         setIsEditing(false);
+        setMessage('Meeting updated successfully ✏️');
+        setMessageType('success');
       }
     } catch (error) {
       console.error('Error updating meeting:', error);
+      setMessage('Failed to update meeting');
+      setMessageType('error');
     }
   };
 
   const handleDelete = async () => {
     try {
       await meetingAPI.delete(id!);
-      navigate('/');
+      setMessage('Meeting deleted successfully 🗑️');
+      setMessageType('success');
+      setTimeout(() => navigate('/'), 2000);
     } catch (error) {
       console.error('Error deleting meeting:', error);
+      setMessage('Failed to delete meeting');
+      setMessageType('error');
     }
   };
 
-  // const formatDate = (dateString: string): string => {
-  //   const date = new Date(dateString);
-  //   return date.toLocaleString(); // Format date and time
-  // };
 
-  if (!meeting) return <p>Loading meeting details...</p>;
+  if (!meeting) {
+    return 
+      <h3>Loading meeting details...</h3>;  
+  }
 
   return (
     <div className="meeting-details">
       <h2>Meeting Details</h2>
+      {message && <div className={`notification ${messageType}`}>{message}</div>}
       {isEditing ? (
         <div>
           <CustomInput 

@@ -3,8 +3,8 @@ import { getMeetings, createMeeting, updateMeeting, deleteMeeting, getMeeting } 
 import { sendResponse } from '../middlewares/sendResponse';
 
 export const handleGetMeetings = async (req: IncomingMessage, res: ServerResponse, query: URLSearchParams) => {
-    const page = parseInt(query.get('page_number') || '1', 10);
-    const limit = parseInt(query.get('page_size') || '10', 10);
+    const page = parseInt(query.get('page') || '1', 10);
+    const limit = parseInt(query.get('limit') || '10', 10);
     const filter = query.get('filter') || '';
 
     try {
@@ -44,27 +44,14 @@ export const handleCreateMeeting = async (req: IncomingMessage, res: ServerRespo
         console.error('Error in handleCreateMeeting:', error);
         sendResponse(res, 400, { error: 'Invalid request' });
     }
-    // try {
-    //     const data = JSON.parse(body);
-    //     const newMeeting = await createMeeting(data);
-    //     sendResponse(res, 201, newMeeting);
-    // } catch (error) {
-    //     sendResponse(res, 400, { error: 'Invalid request' });
-    // }
 };
 
 export const handleUpdateMeeting = async (req: IncomingMessage, res: ServerResponse, id: string, body: string) => {
     try {
-        debugger
-        // const updatedMeeting = await updateMeeting(id, JSON.parse(body));
-        // console.log(updatedMeeting)
-        // // if (!updatedMeeting) {
-        //     // return sendResponse(res, 404, { error: 'Meeting not found' })
-        // // };
-
-        console.log('PUT Request Received');
-        console.log('Received ID:', id);
-        console.log('Raw Body:', body);
+        // debugger
+        // console.log('PUT Request Received');
+        // console.log('Received ID:', id);
+        // console.log('Raw Body:', body);
 
         if (!id) {
             return sendResponse(res, 400, { error: 'Meeting ID is required' });
@@ -104,8 +91,3 @@ export const handleDeleteMeeting = async (req: IncomingMessage, res: ServerRespo
         sendResponse(res, 400, { error: 'Invalid request' });
     }
 };
-
-// function sendResponse(res: ServerResponse<IncomingMessage>, arg1: number, arg2: { error: string; }) {
-//     throw new Error('Function not implemented.');
-// }
-

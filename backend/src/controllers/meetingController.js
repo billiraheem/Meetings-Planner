@@ -44,8 +44,8 @@ var handleGetMeetings = function (req, res, query) { return __awaiter(void 0, vo
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                page = parseInt(query.get('page_number') || '1', 10);
-                limit = parseInt(query.get('page_size') || '10', 10);
+                page = parseInt(query.get('page') || '1', 10);
+                limit = parseInt(query.get('limit') || '10', 10);
                 filter = query.get('filter') || '';
                 _a.label = 1;
             case 1:
@@ -122,15 +122,10 @@ var handleUpdateMeeting = function (req, res, id, body) { return __awaiter(void 
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                debugger;
-                // const updatedMeeting = await updateMeeting(id, JSON.parse(body));
-                // console.log(updatedMeeting)
-                // // if (!updatedMeeting) {
-                //     // return sendResponse(res, 404, { error: 'Meeting not found' })
-                // // };
-                console.log('PUT Request Received');
-                console.log('Received ID:', id);
-                console.log('Raw Body:', body);
+                // debugger
+                // console.log('PUT Request Received');
+                // console.log('Received ID:', id);
+                // console.log('Raw Body:', body);
                 if (!id) {
                     return [2 /*return*/, (0, sendResponse_1.sendResponse)(res, 400, { error: 'Meeting ID is required' })];
                 }
@@ -185,6 +180,3 @@ var handleDeleteMeeting = function (req, res, id) { return __awaiter(void 0, voi
     });
 }); };
 exports.handleDeleteMeeting = handleDeleteMeeting;
-// function sendResponse(res: ServerResponse<IncomingMessage>, arg1: number, arg2: { error: string; }) {
-//     throw new Error('Function not implemented.');
-// }

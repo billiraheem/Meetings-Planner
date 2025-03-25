@@ -39,7 +39,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteMeeting = exports.updateMeeting = exports.createMeeting = exports.getMeeting = exports.getMeetings = void 0;
 var mongoose_1 = require("mongoose");
 var meeting_1 = require("../models/meeting");
-// import Update from '../models/update';
 var getMeetings = function (page, limit, filter) { return __awaiter(void 0, void 0, void 0, function () {
     var skip, query, meetings, totalCount;
     return __generator(this, function (_a) {
@@ -48,16 +47,16 @@ var getMeetings = function (page, limit, filter) { return __awaiter(void 0, void
                 skip = (page - 1) * limit;
                 query = filter ? { title: { $regex: filter, $options: 'i' } } : {};
                 return [4 /*yield*/, meeting_1.default.find(query)
-                        .skip((page - 1) * limit)
+                        .skip(skip)
                         .limit(limit)];
             case 1:
                 meetings = _a.sent();
+                console.log("Skip value:", skip);
                 return [4 /*yield*/, meeting_1.default.countDocuments(query)];
             case 2:
                 totalCount = _a.sent();
-                return [2 /*return*/, { meetings: meetings, "Total meetings": totalCount,
-                        "Page number": page,
-                        "Total meetings per page": limit, }];
+                return [2 /*return*/, { meetings: meetings, totalCount: totalCount, "totalPages": Math.ceil(totalCount / limit),
+                        "currentPage": page }];
         }
     });
 }); };

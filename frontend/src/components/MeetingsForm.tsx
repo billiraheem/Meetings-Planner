@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { Meeting, meetingAPI } from '../services/api';
-import { CustomButton } from './UI/Button';
-import { CustomInput } from './UI/Input';
+import { useEffect, useState } from 'react';
+import { Meeting, meetingAPI } from '../APIs/meetingsAPI';
+import { CustomButton } from './Button';
+import { CustomInput } from './Input';
 
 interface MeetingFormProps {
   onMeetingCreated: (newMeeting: Meeting) => void;
@@ -12,6 +12,18 @@ export const MeetingForm: React.FC<MeetingFormProps> = ({ onMeetingCreated }) =>
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [participants, setParticipants] = useState('');
+  const [message, setMessage] = useState<string | null>(null);
+  const [messageType, setMessageType] = useState<'success' | 'error' | null>(null);
+
+  useEffect(() => {
+      if (message) {
+        const timer = setTimeout(() => {
+          setMessage(null);
+          setMessageType(null);
+        }, 3000);
+        return () => clearTimeout(timer);
+      }
+    }, [message]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,8 +39,12 @@ export const MeetingForm: React.FC<MeetingFormProps> = ({ onMeetingCreated }) =>
       setStartTime('');
       setEndTime('');
       setParticipants('');
+      setMessage('Meeting created successfully');
+      setMessageType('success');
     } catch (error) {
       console.error('Error creating meeting:', error);
+      setMessage('Failed to create meeting');
+      setMessageType('error');
     }
   };
 
@@ -50,6 +66,7 @@ export const MeetingForm: React.FC<MeetingFormProps> = ({ onMeetingCreated }) =>
       type="text" value={participants} 
       onChange={(e) => setParticipants(e.target.value)} required />
       <CustomButton text="Create Meeting" type="submit" className="primary-btn" />
+      {message && <div className={`notification ${messageType}`}>{message}</div>}
     </form>
   );
 };

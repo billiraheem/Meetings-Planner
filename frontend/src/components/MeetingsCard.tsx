@@ -1,40 +1,32 @@
-import { Meeting, meetingAPI } from '../services/api';
+import { Meeting, meetingAPI } from '../APIs/meetingsAPI';
 import { useState } from 'react';
-import { CustomButton } from './UI/Button';
-import { CustomInput } from './UI/Input';
+import { CustomButton } from './Button';
+import { CustomInput } from './Input';
 import { useNavigate } from 'react-router-dom';
 
 interface MeetingCardProps {
   meeting: Meeting;
   onDelete: (id: string) => void;
-  onEdit: () => void;
+  onEdit: (updatedMeeting: Meeting) => void;
 }
 
 export const MeetingCard = ({ meeting, onDelete, onEdit }: MeetingCardProps) => {
   const [showMenu, setShowMenu] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [updatedMeeting, setUpdatedMeeting] = useState<Meeting>({ ...meeting });
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate(); 
 
 
   const handleUpdate = async () => {
     try {
-      await meetingAPI.update(meeting.id, updatedMeeting);
+      await meetingAPI.update(meeting._id, updatedMeeting);
       setIsEditing(false);
-      onEdit(); // Refresh the meeting list after update
+      setShowMenu(false)
+      onEdit(updatedMeeting); // Refresh the meeting list after update
     } catch (error) {
       console.error('Error updating meeting:', error);
     }
   };
-
-  // const formatDate = (dateString: string): string => {
-  //   const date = new Date(dateString);
-  //   return date.toLocaleString(); // Format date and time
-  // };
-
-  // const handleCardClick = () => {
-  //   navigate(`/meeting/${meeting.id}`); // Navigate to MeetingDetails
-  // };
 
   return (
     <div className="meeting-card" >
@@ -64,16 +56,14 @@ export const MeetingCard = ({ meeting, onDelete, onEdit }: MeetingCardProps) => 
             />
         </div> 
       ) : (
-        <div > 
-            <h3 onClick={() => navigate(`/meeting/${meeting.id}`)} style={{ cursor: 'pointer', color: 'white' }}>
-              {meeting.title}
-            </h3>
-            <p>🕒 {new Date(meeting.startTime).toLocaleString()} - {new Date(meeting.endTime).toLocaleString()}</p>
-            {/* <p>👥 {meeting.participants.join(', ')}</p> */}
+        <div >
+          <h3 onClick={() => navigate(`/meeting/${meeting._id}`)} style={{ cursor: 'pointer', color: 'white' }}>
+            {meeting.title}
+          </h3>
+          <p>🕒 {new Date(meeting.startTime).toLocaleString()} - {new Date(meeting.endTime).toLocaleString()}</p>
         </div>
       )}
-      {/* <p>🕒 {meeting.startTime} - {meeting.endTime}</p> */}
-
+      
       <div className="menu-container">
         <CustomButton 
             className="menu-button"
@@ -102,7 +92,8 @@ export const MeetingCard = ({ meeting, onDelete, onEdit }: MeetingCardProps) => 
                     className='delete-btn'
                     text='Delete'
                     icon = '🗑️'
-                    onClick={() => onDelete(meeting.id)}
+                    onClick={() => onDelete(meeting._id)}
+                  
                 />
             </div>
         )}
@@ -110,7 +101,3 @@ export const MeetingCard = ({ meeting, onDelete, onEdit }: MeetingCardProps) => 
     </div>
   );
 };
-
-{/* <button onClick={() => setShowMenu(!showMenu)}>⋮</button> */}
-{/* <button onClick={() => onDelete(meeting.id)}>🗑 Delete</button> */}
-{/* <button onClick={() => console.log('Edit')}>✏ Edit</button> */}

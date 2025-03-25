@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { CustomInput } from './UI/Input';
+import { CustomInput } from './Input';
+import { CustomButton } from './Button';
 
 interface NavBarProps {
   onSearch: (term: string) => void;
@@ -15,56 +16,24 @@ export const NavBar: React.FC<NavBarProps> = ({ onSearch }) => {
         🏠 Home
       </Link>
 
-      <CustomInput
-        label="Search"
-        type="text"
-        placeholder="🔍 Search Meetings..."
-        value={searchTerm}
-        onChange={(e) => {
+      <div className='search-container'>
+        <CustomInput
+          className='search-input'
+          type="text"
+          placeholder="🔍 Search Meetings..."
+          value={searchTerm}
+          onChange={(e) => {
           const trimmedValue = e.target.value.trim();
           setSearchTerm(trimmedValue);
           onSearch(trimmedValue);
         }}
-      />
+        />
+      </div>
 
       <Link to="/create" className="nav-link">
-        ➕ Create
+        <CustomButton text='New Meeting' className='add-meeting-btn' icon='+'/>
+          {/* ➕ Create */}
       </Link>
     </nav>
   );
 };
-
-// import { Link } from 'react-router-dom';
-// import { useState } from 'react';
-// import { CustomInput } from './UI/Input';
-
-// export const NavBar = ({ onSearch }: { onSearch: (term: string) => void }) => {
-//   const [searchTerm, setSearchTerm] = useState('');
-
-//   return (
-//     <nav className="navbar">
-//         <Link to="/">🏠 Home</Link>
-//         <CustomInput label='Search'
-//         type='text' 
-//         placeholder='🔍 Search Meetings...' 
-//         value='searchTerm' 
-//         onChange={(e) => {
-//             setSearchTerm(e.target.value);
-//             onSearch(e.target.value)
-//         }}>
-
-//         </CustomInput>
-//         <Link to="/create">➕ Create</Link>
-//     </nav>
-//   );
-// };
-
-{/* <input 
-        type="text" 
-        placeholder="🔍 Search Meetings..."
-        value={searchTerm}
-        onChange={(e) => {
-          setSearchTerm(e.target.value);
-          onSearch(e.target.value);
-        }} 
-      /> */}
