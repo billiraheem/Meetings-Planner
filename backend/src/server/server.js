@@ -41,28 +41,32 @@ var http_1 = require("http");
 var url_1 = require("url");
 var DB_1 = require("../config/DB");
 var CORS_1 = require("../middlewares/CORS");
-var route_1 = require("../routes/route");
+var meetingRoute_1 = require("../routes/meetingRoute");
+var authRoute_1 = require("../routes/authRoute");
 // Connect to MongoDB
 (0, DB_1.default)();
 var server = (0, http_1.createServer)(function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var method, url, parsedUrl, pathname, query, body;
     return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                if ((0, CORS_1.corsMiddleware)(req, res))
-                    return [2 /*return*/];
-                method = req.method, url = req.url;
-                parsedUrl = new url_1.URL(url || '', "http://".concat(req.headers.host));
-                pathname = parsedUrl.pathname;
-                query = parsedUrl.searchParams;
-                body = '';
-                req.on('data', function (chunk) { return (body += chunk.toString()); });
-                return [4 /*yield*/, new Promise(function (resolve) { return req.on('end', resolve); })];
-            case 1:
-                _a.sent();
-                (0, route_1.routeHandler)(req, res, body);
-                return [2 /*return*/];
-        }
+        if ((0, CORS_1.corsMiddleware)(req, res))
+            return [2 /*return*/];
+        method = req.method, url = req.url;
+        parsedUrl = new url_1.URL(url || '', "http://".concat(req.headers.host));
+        pathname = parsedUrl.pathname;
+        query = parsedUrl.searchParams;
+        body = '';
+        req.on('data', function (chunk) { return (body += chunk.toString()); });
+        req.on('end', function () {
+            var parsedUrl = new url_1.URL(req.url || '', "http://".concat(req.headers.host));
+            var pathname = parsedUrl.pathname;
+            if (pathname.startsWith('/api/auth')) {
+                (0, authRoute_1.authRouteHandler)(req, res, body); // Handle authentication routes
+            }
+            else {
+                (0, meetingRoute_1.routeHandler)(req, res, body); // Handle meeting routes
+            }
+        });
+        return [2 /*return*/];
     });
 }); });
 exports.server = server;
