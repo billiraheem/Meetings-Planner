@@ -1,93 +1,93 @@
-import { IncomingMessage, ServerResponse } from 'http';
+import { Request, Response } from 'express';
 import { getMeetings, createMeeting, updateMeeting, deleteMeeting, getMeeting } from '../services/meetingService';
 import { sendResponse } from '../middlewares/sendResponse';
 
-export const handleGetMeetings = async (req: IncomingMessage, res: ServerResponse, query: URLSearchParams) => {
-    const page = parseInt(query.get('page') || '1', 10);
-    const limit = parseInt(query.get('limit') || '10', 10);
-    const filter = query.get('filter') || '';
+export const handleGetMeetings = async (req: Request, res: Response) => {
+    const page = parseInt(req.query.page as string || '1', 10);
+    const limit = parseInt(req.query.limit as string || '10', 10);
+    const filter = req.query.filter as string || '';
 
     try {
-        const result = await getMeetings(page, limit, filter);
-        sendResponse(res, 200, result);
+        const meetings = await getMeetings(page, limit, filter);
+        res.status(200).json({ meetings, message: "Sucessful!" });
     } catch (error) {
-        sendResponse(res, 500, { error: 'Server Error' });
+        res.status(500).json({ message: "Internal Server Error" });
     }
 };
 
-export const handleGetMeeting = async (req: IncomingMessage, res: ServerResponse, id: string) => {
+export const handleGetMeeting = async (req: Request, res: Response) => {
     try {
+        const { id } = req.params;
         const meeting = await getMeeting(id);
         if (!meeting) {
-            return sendResponse(res, 404, { error: 'Meeting not found' })
+            res.status(404).json({ error: 'Meeting not found' })
         };
-        sendResponse(res, 200, meeting)
+        res.status(200).json({ meeting, message: "Sucessful!" });
     } catch (error) {
-        sendResponse(res, 400, { error: 'Invalid request' });
+        res.status(400).json({ error: "Invalid Request" });
     }
 };
 
-export const handleCreateMeeting = async (req: IncomingMessage, res: ServerResponse, body: string) => {
+export const handleCreateMeeting = async (req: Request, res: Response) => {
     try {
-        if (!body) {
-            return sendResponse(res, 400, { error: 'Request body is missing' });
-        } 
-
-        const data = JSON.parse(body);
+        const data = req.body;
         if (!data.title || !data.startTime || !data.endTime || !data.participants) {
-            return sendResponse(res, 400, { error: 'All fields are required' });
+            res.status(400).json({ error: 'All fields are required' });
         }
 
         const newMeeting = await createMeeting(data);
-        sendResponse(res, 201, newMeeting);
+        res.status(201).json({ meeting: newMeeting, message: "New meeting created!" });
     } catch (error) {
         console.error('Error in handleCreateMeeting:', error);
-        sendResponse(res, 400, { error: 'Invalid request' });
+        res.status(400).json({ error: "Invalid Request" });
     }
 };
 
-export const handleUpdateMeeting = async (req: IncomingMessage, res: ServerResponse, id: string, body: string) => {
+export const handleUpdateMeeting = async (req: Request, res: Response) => {
     try {
         // debugger
         // console.log('PUT Request Received');
         // console.log('Received ID:', id);
         // console.log('Raw Body:', body);
 
+        const { id } = req.params;
+
         if (!id) {
-            return sendResponse(res, 400, { error: 'Meeting ID is required' });
+            res.status(400).json({ error: "Meeting ID required" });
         }
 
-        if (!body) {
-            return sendResponse(res, 400, { error: 'Request body is missing' });
+        if (!req.body) {
+            res.status(400).json({ error: 'Request body is missing' })
         } 
 
-        const parsedBody = JSON.parse(body);
+        const parsedBody = req.body;
         if (Object.keys(parsedBody).length === 0) {
-            return sendResponse(res, 400, { error: 'No valid fields provided for update' });
+            res.status(400).json({ error: 'No valid fields provided for update' });
         }
 
         const updatedMeeting = await updateMeeting(id, parsedBody);
-        console.log('Updated Meeting:', updatedMeeting);
-        console.log(updatedMeeting)
         if (!updatedMeeting) {
-            console.log('Meeting Not Found!');
-            return sendResponse(res, 404, { error: 'Meeting not found' });
+            res.status(404).json({ error: 'Meeting not found' });
         }
 
-        sendResponse(res, 200, updatedMeeting);
+        res.status(200).json({
+            meeting: updatedMeeting,
+            meesage: "Meeting updated successfully!"
+        });
     } catch (error) {
-        sendResponse(res, 400, { error: 'Invalid request' });
+        res.status(400).json({ error: "Invalid Request" });
     }
 };
 
-export const handleDeleteMeeting = async (req: IncomingMessage, res: ServerResponse, id: string) => {
+export const handleDeleteMeeting = async (req: Request, res: Response) => {
     try {
+        const { id } = req.params;
         const deletedMeeting = await deleteMeeting(id);
         if (!deletedMeeting) {
-            return sendResponse(res, 404, { error: 'Meeting not found' })
+            res.status(404).json({ error: 'Meeting not found' });
         };
-        sendResponse(res, 204, null);
+        res.status(200).json({ message: "Meeting deleted successfully!"});
     } catch (error) {
-        sendResponse(res, 400, { error: 'Invalid request' });
+        res.status(400).json({ error: "Invalid Request" });
     }
 };

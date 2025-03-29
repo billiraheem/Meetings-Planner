@@ -5,18 +5,11 @@ dotenv.config();
 
 const ACCESS_SECRET = process.env.ACCESS_TOKEN!;
 const REFRESH_SECRET = process.env.REFRESH_TOKEN!;
+const REFRESH_EXPIRY = '7d';
 
-// console.log("ACCESS_SECRET:", ACCESS_SECRET);
-// console.log("REFRESH_SECRET:", REFRESH_SECRET);
-// if (!ACCESS_SECRET || !REFRESH_SECRET) {
-//   console.error("Error: Missing secret keys in .env file!");
-// }
-
-export const generateAccessToken = (userId: string) => {
+export const generateAccessToken = (userId: string, isAdmin: boolean) => {
   try {
-  const token = jwt.sign({ userId }, ACCESS_SECRET, { expiresIn: "15m" });
-  console.log("Generated Access Token:", token);  // Log generated token
-  return token;
+  return jwt.sign({ userId, isAdmin }, ACCESS_SECRET, { expiresIn: "15m" });
 } catch (error) {
   console.error("Error generating access token:", error);
   return null;
@@ -24,9 +17,7 @@ export const generateAccessToken = (userId: string) => {
 
 export const generateRefreshToken = (userId: string) => {
   try {
-    const token = jwt.sign({ userId }, REFRESH_SECRET, { expiresIn: "7d" });
-    console.log("Generated Refresh Token:", token);
-    return token;
+    return jwt.sign({ userId }, REFRESH_SECRET, { expiresIn: REFRESH_EXPIRY });
   } catch (error) {
     console.error("Error generating refresh token:", error);
     return null;
@@ -39,4 +30,8 @@ export const verifyAccessToken = (token: string) => {
 
 export const verifyRefreshToken = (token: string) => {
   return jwt.verify(token, REFRESH_SECRET);
+};
+
+export const getRefreshTokenExpiry = () => {
+  return REFRESH_EXPIRY;
 };

@@ -6,23 +6,16 @@ export interface User extends Document {
     name: string;
     email: string;
     password: string;
-    isVerified: boolean;
-    verificationToken?: string;
+    isAdmin?: boolean,
     refreshToken?: string;
 };
 
 const userSchema = new Schema<User>({
     name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true, lowercase: true },
     password: { type: String, required: true },
-    isVerified: { type: Boolean, default: false },
+    isAdmin: { type: Boolean, default: false },
     refreshToken: { type: String },
-    // name: String,
-    // email: String,
-    // password: String,
-    // isVerified: Boolean,
-    // verificationToken: String,
-    // refreshToken: String,
 });
 
 const User = mongoose.model<User>('Users', userSchema);
