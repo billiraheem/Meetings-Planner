@@ -1,17 +1,28 @@
-import app from './src/server/server';
-import connectDB from './src/config/DB';
+import express from 'express';
+import bodyParser from 'body-parser';
+import { corsMiddleware } from '../backend/src/middlewares/CORS';
+import authRoutes from '../backend/src/routes/authRoute';
+import meetingRoutes from '../backend/src/routes/meetingRoute';
+import cookieParser from "cookie-parser";
+import helmet from 'helmet';
+// import cors from 'cors';
 
-const PORT = process.env.PORT || 8080;
+const app = express();                  
 
-// Connect to database and start the server
-connectDB().then(() => {
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
-    });
-}).catch((err) => {
-    console.error('Failed to connect to database:', err);
-    process.exit(1);
-});
+// Apply Middleware
+app.use(corsMiddleware);
+app.use(bodyParser.json());
+app.use(helmet())
+app.use(cookieParser());
+
+//install helmet, cors and swap server with my index
+
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/meetings', meetingRoutes);
+
+export default app;
+
 
 // import { server } from "./src/server/server";
 

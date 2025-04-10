@@ -11,13 +11,12 @@ const ACCESS_SECRET = process.env.ACCESS_TOKEN!;
 const REFRESH_SECRET = process.env.REFRESH_TOKEN!;
 const IDLE_TIMEOUT = 15 * 60 * 1000;
 
-// interface DecodedToken extends JwtPayload {
-//   userId: string;
-//   isAdmin: boolean;
-// }
-
-interface AuthenticatedRequest extends Request {
-  user?: any;
+export interface AuthenticatedRequest extends Request {
+  user?: {
+    userId: string;
+    email: string;
+    isAdmin: boolean;
+  }
 }
 
 // track user's activity
@@ -39,6 +38,8 @@ export const authenticateUser = async (req: AuthenticatedRequest, res: Response,
   try {
     const decoded: any = jwt.verify(token, ACCESS_SECRET) //as DecodedToken;
     const user = await User.findById(decoded.userId);
+    
+    // console.log('User object from database:', user)
 
     if (!user) {
       res.status(404).json({ error: "User not found" })
@@ -46,7 +47,13 @@ export const authenticateUser = async (req: AuthenticatedRequest, res: Response,
     }
 
     userLastActivity[user._id.toString()] = Date.now();
-    req.user = decoded;
+    req.user = {
+      userId: user._id.toString(),
+      email: user.email,
+      isAdmin: user.isAdmin || false,
+    }; //decoded;
+    // console.log('req.user object:', req.user);
+
     next();
   } catch (error) {
       res.status(403).json({ error: "Invalid token" })

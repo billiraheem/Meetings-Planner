@@ -1,6 +1,10 @@
 import { Request, Response } from 'express';
 import { getMeetings, createMeeting, updateMeeting, deleteMeeting, getMeeting } from '../services/meetingService';
 import { sendResponse } from '../middlewares/sendResponse';
+import { globalResponseCodes } from '../services/responseCode';
+import { scheduleMeetingReminder, sendMeetingCreatedEmail } from '../services/emailService';
+import { AuthenticatedRequest } from '../middlewares/auth';
+
 
 export const handleGetMeetings = async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string || '1', 10);
@@ -8,10 +12,10 @@ export const handleGetMeetings = async (req: Request, res: Response) => {
     const filter = req.query.filter as string || '';
 
     try {
-        const meetings = await getMeetings(page, limit, filter);
-        res.status(200).json({ meetings, message: "Sucessful!" });
+        const { meetings, totalPages } = await getMeetings(page, limit, filter);
+        res.status(200).json({ Success: true, responseMessage: "Sucessful!", responseCode: globalResponseCodes.SUCCESSFUL, data: meetings, totalPages });
     } catch (error) {
-        res.status(500).json({ message: "Internal Server Error" });
+        res.status(500).json({ Error: true, errorMessage: "Internal Server Error", responseCode: globalResponseCodes.INTERNAL_SERVER_REQUEST });
     }
 };
 
@@ -20,26 +24,47 @@ export const handleGetMeeting = async (req: Request, res: Response) => {
         const { id } = req.params;
         const meeting = await getMeeting(id);
         if (!meeting) {
-            res.status(404).json({ error: 'Meeting not found' })
+            res.status(404).json({ Error: true, errorMessage: 'Meeting not found', responseCode: globalResponseCodes.NOT_FOUND })
+            return;
         };
-        res.status(200).json({ meeting, message: "Sucessful!" });
+        res.status(200).json({ Success: true, responseMessage: "Sucessful!", responseCode: globalResponseCodes.SUCCESSFUL, data: meeting });
     } catch (error) {
-        res.status(400).json({ error: "Invalid Request" });
+        res.status(500).json({ Error: true, errorMessage: "Internal Server Error", responseCode: globalResponseCodes.INTERNAL_SERVER_REQUEST });
     }
 };
 
-export const handleCreateMeeting = async (req: Request, res: Response) => {
+export const handleCreateMeeting = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const data = req.body;
         if (!data.title || !data.startTime || !data.endTime || !data.participants) {
-            res.status(400).json({ error: 'All fields are required' });
+            res.status(400).json({ Error: true, errorMessage: 'All fields are required', responseCode: globalResponseCodes.BAD_REQUEST });
+            return;
+        }
+        // console.log("Request:",req)
+        const newMeeting = await createMeeting(data);
+        // console.log('New meeting created:', newMeeting);
+
+        // Debug: Check what user data we have
+        // console.log('User data in create meeting:', req.user);
+
+        // Get user email from the updated req.user object
+        const userEmail = req.user?.email;
+        // console.log(req.user)
+        if (!userEmail) {
+         res.status(401).json({ Error: true, errorMessage: 'User email not found' });
+         return;
         }
 
-        const newMeeting = await createMeeting(data);
-        res.status(201).json({ meeting: newMeeting, message: "New meeting created!" });
+        // Send creation email
+        await sendMeetingCreatedEmail(userEmail, newMeeting);
+
+        // Schedule reminder 10 minutes before
+        scheduleMeetingReminder(userEmail, newMeeting);
+
+        res.status(201).json({ Success: true, responseMessage: "New meeting created!", responseCode: globalResponseCodes.CREATED, data: newMeeting });
     } catch (error) {
         console.error('Error in handleCreateMeeting:', error);
-        res.status(400).json({ error: "Invalid Request" });
+        res.status(500).json({ Error: true, errorMessage: "Meeting not created", responseCode: globalResponseCodes.INTERNAL_SERVER_REQUEST });
     }
 };
 
@@ -53,29 +78,35 @@ export const handleUpdateMeeting = async (req: Request, res: Response) => {
         const { id } = req.params;
 
         if (!id) {
-            res.status(400).json({ error: "Meeting ID required" });
+            res.status(400).json({ Error: true, errorMessage: "Meeting ID required", responseCode: globalResponseCodes.BAD_REQUEST });
+            return;
         }
 
         if (!req.body) {
-            res.status(400).json({ error: 'Request body is missing' })
-        } 
+            res.status(400).json({ Error: true, errorMessage: 'Request body is missing', responseCode: globalResponseCodes.BAD_REQUEST })
+            return;
+        }
 
         const parsedBody = req.body;
         if (Object.keys(parsedBody).length === 0) {
-            res.status(400).json({ error: 'No valid fields provided for update' });
+            res.status(400).json({ Error: true, errorMessage: 'No valid fields provided for update', responseCode: globalResponseCodes.BAD_REQUEST });
+            return;
         }
 
         const updatedMeeting = await updateMeeting(id, parsedBody);
         if (!updatedMeeting) {
-            res.status(404).json({ error: 'Meeting not found' });
+            res.status(404).json({ Error: true, errorMessage: 'Meeting not found', responseCode: globalResponseCodes.NOT_FOUND });
+            return;
         }
 
         res.status(200).json({
-            meeting: updatedMeeting,
-            meesage: "Meeting updated successfully!"
+            Success: true,
+            responseMessage: "Meeting updated successfully!",
+            responseCode: globalResponseCodes.SUCCESSFUL,
+            data: updatedMeeting
         });
     } catch (error) {
-        res.status(400).json({ error: "Invalid Request" });
+        res.status(500).json({ Error: true, errorMessage: "Meeting not updated", responseCode: globalResponseCodes.INTERNAL_SERVER_REQUEST });
     }
 };
 
@@ -84,10 +115,11 @@ export const handleDeleteMeeting = async (req: Request, res: Response) => {
         const { id } = req.params;
         const deletedMeeting = await deleteMeeting(id);
         if (!deletedMeeting) {
-            res.status(404).json({ error: 'Meeting not found' });
+            res.status(404).json({ Error: true, errorMessage: 'Meeting not found', responseCode: globalResponseCodes.NOT_FOUND });
+            return;
         };
-        res.status(200).json({ message: "Meeting deleted successfully!"});
+        res.status(200).json({ Success: true, responseMessage: "Meeting deleted successfully!", responseCode: globalResponseCodes.SUCCESSFUL });
     } catch (error) {
-        res.status(400).json({ error: "Invalid Request" });
+        res.status(500).json({ Error: true, errorMessage: "Meeting not deleted", responseCode: globalResponseCodes.INTERNAL_SERVER_REQUEST });
     }
 };

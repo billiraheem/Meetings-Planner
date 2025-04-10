@@ -1,127 +1,267 @@
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Meeting, meetingAPI } from '../APIs/meetingsAPI';
 import { CustomButton } from '../components/Button';
-import { CustomInput } from '../components/Input';
+// import { CustomInput } from '../components/Input';
+import { meetingAPI } from '../APIs/api';
+import { Meeting } from '../types/index';
+import { toast } from 'react-toastify';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+// import { Navbar } from '../components/NavBar';
 
-
-export const MeetingDetails = () => {
-  const { id } = useParams<{ id: string }>();
+export const MeetingDetails: React.FC = () => {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
   const [meeting, setMeeting] = useState<Meeting | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [updatedMeeting, setUpdatedMeeting] = useState<Meeting | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
-  const [messageType, setMessageType] = useState<'success' | 'error' | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchMeeting();
-  }, []);
-
-  useEffect(() => {
-    if (message) {
-      const timer = setTimeout(() => {
-        setMessage(null);
-        setMessageType(null);
-      }, 3000);
-      return () => clearTimeout(timer);
+    if (id) {
+      fetchMeeting();
     }
-  }, [message]);
+  }, [id]);
 
   const fetchMeeting = async () => {
     try {
-      const data = await meetingAPI.getOne(id!);
-      setMeeting(data);
-      setUpdatedMeeting(data);
-    } catch (error) {
-      console.error('Error fetching meeting:', error);
-      setMessage('Error fetching meeting');
-      setMessageType('error');
+      setLoading(true);
+      const response = await meetingAPI.getMeeting(id!);
+      setMeeting(response.data.data);
+    } catch (error: any) {
+      toast.error(error.response?.data?.errorMessage || 'Failed to fetch meeting details');
+      navigate('/home');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleUpdate = async () => {
-    try {
-      if (updatedMeeting) {
-        await meetingAPI.update(id!, updatedMeeting);
-        setMeeting(updatedMeeting);
-        setIsEditing(false);
-        setMessage('Meeting updated successfully ✏️');
-        setMessageType('success');
-      }
-    } catch (error) {
-      console.error('Error updating meeting:', error);
-      setMessage('Failed to update meeting');
-      setMessageType('error');
-    }
+  const handleGoBack = () => {
+    navigate(-1);
+  };
+
+  const handleEdit = () => {
+    navigate(`/meeting/edit/${id}`);
   };
 
   const handleDelete = async () => {
-    try {
-      await meetingAPI.delete(id!);
-      setMessage('Meeting deleted successfully 🗑️');
-      setMessageType('success');
-      setTimeout(() => navigate('/'), 2000);
-    } catch (error) {
-      console.error('Error deleting meeting:', error);
-      setMessage('Failed to delete meeting');
-      setMessageType('error');
+    if (window.confirm('Are you sure you want to delete this meeting?')) {
+      try {
+        const response = await meetingAPI.deleteMeeting(id!);
+        toast.success(response.data.responseMessage ||'Meeting deleted successfully');
+        navigate('/home');
+      } catch (error: any) {
+        toast.error(error.response?.data?.errorMessage || 'Failed to delete meeting');
+      }
     }
   };
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  };
+
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  if (loading) {
+    return <div className="loading">Loading meeting details...</div>;
+  }
 
   if (!meeting) {
-    return 
-      <h3>Loading meeting details...</h3>;  
+    return <div className="error">Meeting not found</div>;
   }
 
   return (
-    <div className="meeting-details">
-      <h2>Meeting Details</h2>
-      {message && <div className={`notification ${messageType}`}>{message}</div>}
-      {isEditing ? (
-        <div>
-          <CustomInput 
-            label="Title"
-            value={updatedMeeting?.title || ''}
-            onChange={(e) => setUpdatedMeeting({ ...updatedMeeting!, title: e.target.value })}
-          />
-          <CustomInput 
-            label="Start Time"
-            type="datetime-local"
-            value={updatedMeeting?.startTime || ''}
-            onChange={(e) => setUpdatedMeeting({ ...updatedMeeting!, startTime: e.target.value })}
-          />
-          <CustomInput 
-            label="End Time"
-            type="datetime-local"
-            value={updatedMeeting?.endTime || ''}
-            onChange={(e) => setUpdatedMeeting({ ...updatedMeeting!, endTime: e.target.value })}
-          />
-          <CustomInput 
-            label="Participants (comma separated)"
-            value={updatedMeeting?.participants.join(', ') || ''}
-            onChange={(e) => setUpdatedMeeting({ ...updatedMeeting!, participants: e.target.value.split(', ') })}
-          />
-        </div>
-      ) : (
-        <div>
-          <p><strong>Title:</strong> {meeting.title}</p>
-          <p><strong>Start Time:</strong> {new Date(meeting.startTime).toLocaleString()}</p>
-          <p><strong>End Time:</strong> {new Date(meeting.endTime).toLocaleString()}</p>
-          <p><strong>Participants:</strong> {meeting.participants.join(', ')}</p>
-        </div>
-      )}
+    <div className="meeting-details-container">
+      <div className="details-header">
+        <button onClick={handleGoBack} className="back-button">
+          <FontAwesomeIcon icon={faArrowLeft} /> Back
+        </button>
+        {/* <h1>Meeting Details</h1> */}
+      </div>
 
-      <div className="actions">
-        {isEditing ? (
-          <CustomButton text="Save" icon="💾" onClick={handleUpdate} />
-        ) : (
-          <CustomButton text="Edit" icon="✏️" onClick={() => setIsEditing(true)} />
-        )}
-        <CustomButton text="Delete" icon="🗑️" onClick={handleDelete} />
-        <CustomButton text="Back to Home" icon="🏠" onClick={() => navigate('/')} />
+      <div className="meeting-content">
+        <div className="meeting-info">
+          <h1 className="meeting-title">{meeting.title}</h1>
+          
+          <div className="info-sections">
+            <div className="section">
+              <h3 className="section-title">Date and Time</h3>
+              <div className="info-item">
+                <span className="info-label">Date:</span>
+                <span className="info-value">{formatDate(meeting.startTime)}</span>
+              </div>
+              <div className="info-item">
+                <span className="info-label">Start Time:</span>
+                <span className="info-value">{formatTime(meeting.startTime)}</span>
+              </div>
+              <div className="info-item">
+                <span className="info-label">End Time:</span>
+                <span className="info-value">{formatTime(meeting.endTime)}</span>
+              </div>
+            </div>
+            
+            <div className="participants-section">
+              <h3 className="section-title">Participants</h3>
+              <ol className="participants-list">
+                {meeting.participants.map((participant, index) => (
+                  <li key={index}>{participant}</li>
+                ))}
+              </ol>
+            </div>
+          </div>
+          
+          <div className="actions-section">
+            <CustomButton onClick={handleEdit} className="edit-button">
+              Edit Meeting
+            </CustomButton>
+            <CustomButton onClick={handleDelete} className="delete-button">
+              Delete Meeting
+            </CustomButton>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
+
+
+{/* <div className="meeting-details">
+        <h2>{meeting.title}</h2>
+        
+        <div className="details-section">
+          <h3>Date and Time</h3>
+          <p>
+            <strong>Date:</strong> {formatDate(meeting.startTime)}
+          </p>
+          <p>
+            <strong>Start Time:</strong> {formatTime(meeting.startTime)}
+          </p>
+          <p>
+            <strong>End Time:</strong> {formatTime(meeting.endTime)}
+          </p>
+        </div>
+
+        <div className="details-section">
+          <h3>Participants</h3>
+          <ol className="participants-list">
+            {meeting.participants.map((participant, index) => (
+              <li key={index}>{participant}</li>
+            ))}
+          </ol>
+        </div>
+
+        <div className="details-actions">
+          <CustomButton onClick={handleEdit} className="edit-button">
+             Edit Meeting
+          </CustomButton>
+          <CustomButton onClick={handleDelete} className="delete-button">
+             Delete Meeting
+          </CustomButton>
+        </div>
+      </div> */}
+
+{/* <FontAwesomeIcon icon={faEdit} />
+<FontAwesomeIcon icon={faTrash} /> */}
+
+
+// const { id } = useParams<{ id: string }>();
+//   console.log("id:", id)
+//   const [meeting, setMeeting] = useState<Meeting | null>(null);
+//   const [isEditing, setIsEditing] = useState(false);
+//   const [formData, setFormData] = useState({ title: '', startTime: '', endTime: '', participants: '' });
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     const fetchMeeting = async () => {
+//       const response = await getMeeting(id!);
+//       setMeeting(response.data.data);
+//       console.log(response.data.data)
+//       setFormData({
+//         title: response?.data?.data?.title,
+//         startTime: response.data.data.startTime,
+//         endTime: response?.data?.data.endTime,
+//         participants: response?.data?.data.participants?.join(', '),
+//       });
+//     };
+//     fetchMeeting();
+//   }, [id]);
+
+//   const handleUpdate = async () => {
+//     try {
+//       const response = await updateMeeting(id!, {
+//         title: formData.title,
+//         startTime: new Date(formData.startTime),
+//         endTime: new Date(formData.endTime),
+//         participants: formData.participants.split(',').map((p) => p.trim()),
+//       });
+//       setIsEditing(false);
+//       toast.success(response.data.responseMessage);
+//       navigate('/home');
+//     } catch (error: any) {
+//       toast.error(error.response?.data?.errorMessage || 'Failed to update meeting');
+//     }
+//   };
+
+//   if (!meeting) return <div>Loading...</div>;
+
+//   return (
+//     <div className='meeting-deets'>
+//       <Navbar />
+      
+//       <div className='deets'>
+//       <h1 className='deets-title'>Meeting Details</h1>
+//         {isEditing ? (
+//           <div className='editing'>
+//             <CustomInput
+//               value={formData.title}
+//               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+//               placeholder="Title"
+//             />
+//             <CustomInput
+//               value={formData.startTime}
+//               onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
+//               type="datetime-local"
+//             />
+//             <CustomInput
+//               value={formData.endTime}
+//               onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
+//               type="datetime-local"
+//             />
+//             <CustomInput
+//               value={formData.participants}
+//               onChange={(e) => setFormData({ ...formData, participants: e.target.value })}
+//               placeholder="Participants (comma-separated)"
+//             />
+//             <CustomButton className='edit' onClick={handleUpdate}>Update</CustomButton>
+//           </div>
+//         ) : (
+//           <div className='meeting-card2'>
+//             <h2>{meeting.title}</h2>
+//             <p>
+//               <FontAwesomeIcon icon={faClock} />  {/* People icon */}
+//               Start: {new Date(meeting.startTime).toLocaleString()}
+//             </p>
+//             <p>
+//               <FontAwesomeIcon icon={faClock} />  {/* People icon */}
+//               End: {new Date(meeting.endTime).toLocaleString()}
+//             </p>
+//             <p>
+//               <FontAwesomeIcon icon={faUsers} />  {/* People icon */}
+//               Participants: {meeting?.participants?.join(', ')}
+//             </p>
+//             <CustomButton className='edit' onClick={() => setIsEditing(true)}>Edit</CustomButton>
+//           </div>
+//         )}
+//       </div>
+//     </div>
+//   );

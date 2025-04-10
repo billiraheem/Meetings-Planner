@@ -17,3 +17,4 @@ const meetingSchema = new Schema<Meeting>({
 const Meeting = mongoose.model<Meeting>('Meeting', meetingSchema);
 
 export default Meeting;
+
