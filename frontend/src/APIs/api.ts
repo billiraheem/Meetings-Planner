@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-const API_URL = 'https://bills-scheduler-backend.onrender.com';
+const API_URL = 'https://bills-scheduler-backend.onrender.com/api';
 
 export const api = axios.create({
   baseURL: API_URL,
