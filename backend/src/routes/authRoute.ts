@@ -4,9 +4,9 @@ import { authenticateUser, refreshTokenMiddleware } from '../middlewares/auth';
 
 const router = express.Router();
 
-router.post('/signup', handleSignup);
-router.post('/login', handleLogin);
-router.post('/logout', authenticateUser, handleLogout);
-router.post("/refresh", refreshTokenMiddleware);
+router.post('/auth/signup', handleSignup);
+router.post('/auth/login', handleLogin);
+router.post('/auth/logout', authenticateUser, handleLogout);
+router.post("/auth/refresh", refreshTokenMiddleware);
 
 export default router;
