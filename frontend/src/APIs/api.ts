@@ -2,6 +2,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 
 const API_URL = 'https://bills-scheduler-backend.onrender.com/api';
+// const API_URL = 'http://localhost:8000/api' //upadte
 
 export const api = axios.create({
   baseURL: API_URL,
@@ -65,6 +66,17 @@ export const authAPI = {
 // Meeting API calls
 export const meetingAPI = {
   getMeetings: async (page?: number, limit?: number, filter = '') => { //1, 10
+    // const token = localStorage.getItem('accessToken');
+    // if (!token) {
+    //   throw new Error('No access token available');
+    // }
+    
+    // return await axios.get(`/api/meetings`, {
+    //   params: { page, limit, filter },
+    //   headers: {
+    //     Authorization: `Bearer ${token}`
+    //   }
+    // });
     return api.get(`/meetings?page=${page}&limit=${limit}&filter=${filter}`);
   },
   

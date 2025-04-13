@@ -4,6 +4,7 @@ import { CustomButton } from './Button';
 import { faHome, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { toast } from 'react-toastify';
+import { CalendarWidget } from './CalendarWidget';
 // import { authAPI } from '../APIs/api';
 
 export const Navbar: React.FC = () => {
@@ -15,14 +16,6 @@ export const Navbar: React.FC = () => {
   const handleHomeClick = () => {
     navigate('/home');
   };
-
-  // const handleCalendarClick = () => {
-  //   navigate('/calendar');
-  // };
-
-  // const handleCreateMeetingClick = () => {
-  //   navigate('/meeting/new');
-  // };
 
   const handleLogout = async () => {
     try {
@@ -45,11 +38,7 @@ export const Navbar: React.FC = () => {
 
   return (
     <nav className="navbar">
-      {/* <div className="navbar-brand">
-        <h1 onClick={handleHomeClick} className="nav-logo">Scheduler</h1>
-      </div> */}
-
-      <div>
+      <div className='navbar-left'>
         <CustomButton
           className={`nav-item ${location.pathname === '/home' ? 'active' : ''}`}
           onClick={handleHomeClick}
@@ -60,24 +49,7 @@ export const Navbar: React.FC = () => {
       </div>
 
       <div className="navbar-menu">
-
-
-        {/* <CustomButton
-          className={`nav-item ${location.pathname === '/calendar' ? 'active' : ''}`}
-          onClick={handleCalendarClick}
-        >
-          <FontAwesomeIcon icon={faCalendarAlt} />
-          <span>Calendar</span>
-        </CustomButton> */}
-
-        {/* <button
-          className="nav-item create-meeting"
-          onClick={handleCreateMeetingClick}
-        >
-          <FontAwesomeIcon icon={faPlus} />
-          <span>New Meeting</span>
-        </button> */}
-
+        <CalendarWidget />
         <CustomButton
           className="nav-item logout"
           onClick={handleLogout}

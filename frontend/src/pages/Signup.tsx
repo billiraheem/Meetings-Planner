@@ -53,26 +53,26 @@ export const Signup: React.FC = () => {
   });
 
   // Check if a field is valid
-  const isFieldValid = (fieldName: string): boolean => {
-    return formik.touched[fieldName as keyof typeof formik.touched] === true && 
-           !formik.errors[fieldName as keyof typeof formik.errors];
-  };
+  // const isFieldValid = (fieldName: string): boolean => {
+  //   return formik.touched[fieldName as keyof typeof formik.touched] === true && 
+  //          !formik.errors[fieldName as keyof typeof formik.errors];
+  // };
 
   // Check if a field should be disabled
-  const shouldFieldBeDisabled = (fieldName: string): boolean => {
-    switch (fieldName) {
-      case 'name':
-        return false; // First field is always enabled
-      case 'email':
-        return !isFieldValid('name');
-      case 'password':
-        return !isFieldValid('name') || !isFieldValid('email');
-      case 'confirmPassword':
-        return !isFieldValid('name') || !isFieldValid('email') || !isFieldValid('password');
-      default:
-        return false;
-    }
-  };
+  // const shouldFieldBeDisabled = (fieldName: string): boolean => {
+  //   switch (fieldName) {
+  //     case 'name':
+  //       return false; // First field is always enabled
+  //     case 'email':
+  //       return !isFieldValid('name');
+  //     case 'password':
+  //       return !isFieldValid('name') || !isFieldValid('email');
+  //     case 'confirmPassword':
+  //       return !isFieldValid('name') || !isFieldValid('email') || !isFieldValid('password');
+  //     default:
+  //       return false;
+  //   }
+  // };
 
   return (
     <div className="signup-container">
@@ -81,6 +81,7 @@ export const Signup: React.FC = () => {
         <CustomInput
           type="text"
           name="name"
+          placeholder='Enter your name'
           value={formik.values.name}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
@@ -92,36 +93,39 @@ export const Signup: React.FC = () => {
         <CustomInput
           type="email"
           name="email"
+          placeholder='Enter your email'
           value={formik.values.email}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           label="Email"
           error={formik.touched.email ? formik.errors.email : ''}
-          disabled={shouldFieldBeDisabled('email')}
+          // disabled={shouldFieldBeDisabled('email')}
           required
         />
 
         <CustomInput
           type="password"
           name="password"
+          placeholder='Enter your password'
           value={formik.values.password}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           label="Password"
           error={formik.touched.password ? formik.errors.password : ''}
-          disabled={shouldFieldBeDisabled('password')}
+          // disabled={shouldFieldBeDisabled('password')}
           required
         />
 
         <CustomInput
           type="password"
           name="confirmPassword"
+          placeholder='Confirm your password'
           value={formik.values.confirmPassword}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           label="Confirm Password"
           error={formik.touched.confirmPassword ? formik.errors.confirmPassword : ''}
-          disabled={shouldFieldBeDisabled('confirmPassword')}
+          // disabled={shouldFieldBeDisabled('confirmPassword')}
           required
         />
 

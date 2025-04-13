@@ -46,22 +46,22 @@ export const Login: React.FC = () => {
   });
 
   // Check if a field is valid
-  const isFieldValid = (fieldName: string): boolean => {
-    return formik.touched[fieldName as keyof typeof formik.touched] === true && 
-           !formik.errors[fieldName as keyof typeof formik.errors];
-  };
+  // const isFieldValid = (fieldName: string): boolean => {
+  //   return formik.touched[fieldName as keyof typeof formik.touched] === true && 
+  //          !formik.errors[fieldName as keyof typeof formik.errors];
+  // };
 
   // Check if a field should be disabled
-  const shouldFieldBeDisabled = (fieldName: string): boolean => {
-    switch (fieldName) {
-      case 'email':
-        return false; // First field is always enabled
-      case 'password':
-        return !isFieldValid('email');
-      default:
-        return false;
-    }
-  };
+  // const shouldFieldBeDisabled = (fieldName: string): boolean => {
+  //   switch (fieldName) {
+  //     case 'email':
+  //       return false; // First field is always enabled
+  //     case 'password':
+  //       return !isFieldValid('email');
+  //     default:
+  //       return false;
+  //   }
+  // };
 
   return (
     <div className="login-container">
@@ -70,6 +70,7 @@ export const Login: React.FC = () => {
         <CustomInput
           type="email"
           name="email"
+          placeholder='Enter your email'
           value={formik.values.email}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
@@ -81,12 +82,13 @@ export const Login: React.FC = () => {
         <CustomInput
           type="password"
           name="password"
+          placeholder='Enter your password'
           value={formik.values.password}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           label="Password"
           error={formik.touched.password ? formik.errors.password : ''}
-          disabled={shouldFieldBeDisabled('password')}
+          // disabled={shouldFieldBeDisabled('password')}
           required
         />
 

@@ -1,13 +1,22 @@
 import mongoose from 'mongoose';
 import Meeting from '../models/meeting';
 
-export const getMeetings = async (page: number, limit: number, filter: string) => {
+export const getMeetings = async (page: number, limit: number, filter: string, userId: string) => {
     const skip = (page - 1) * limit;
-    const query = filter ? { title: { $regex: filter, $options: 'i' } } : {};
+
+    // Add userId to the filter
+    const query: any = { userId: userId };
+
+    // Add title search if filter is provided
+    if (filter) {
+        query.title = { $regex: filter, $options: 'i' };
+    }
+
+    // const query = filter ? { title: { $regex: filter, $options: 'i' } } : {};
     const meetings = await Meeting.find(query)
                                   .skip(skip)
                                   .limit(limit);
-    console.log("Skip value:", skip);
+    // console.log("Skip value:", skip);
     const totalCount = await Meeting.countDocuments(query);
     return { meetings, 
         totalCount,

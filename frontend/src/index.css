@@ -2,7 +2,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   min-height: fit-content;
 }
 
@@ -27,7 +27,10 @@ body {
   /* width: 100vw; */
 }
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
   margin-bottom: 20px;
   color: #2c3e50;
 }
@@ -138,6 +141,247 @@ button {
   background-color: #e74c3c;
 }
 
+/* Calendar Dropdown Container */
+.calendar-dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+.calendar-toggle-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.calendar-toggle-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Calendar Overlay */
+.calendar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  z-index: 1000;
+}
+
+/* Calendar Dropdown */
+.calendar-dropdown {
+  position: absolute;
+  top: 60px;
+  /* top: 100%; */
+  /* left: 0; */
+  right: 0px;
+  width: 300px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1001;
+  overflow: hidden;
+  color: #333;
+}
+
+/* Calendar Header */
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.calendar-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.calendar-nav-btn {
+  background: none;
+  border: none;
+  color: #555;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.calendar-nav-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Calendar Weekdays */
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.calendar-weekday {
+  text-align: center;
+  padding: 8px 0;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #777;
+}
+
+/* Calendar Grid */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(6, 42px);
+}
+
+.calendar-day {
+  position: relative;
+  padding: 4px;
+  text-align: center;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  border-right: 1px solid #f0f0f0;
+  transition: background-color 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+
+.calendar-day:hover {
+  background-color: #f5f7fa;
+}
+
+.calendar-day.other-month {
+  color: #bbb;
+}
+
+.calendar-day.today {
+  font-weight: bold;
+  color: #1a73e8;
+  background-color: rgba(26, 115, 232, 0.1);
+}
+
+.calendar-day.has-meetings {
+  font-weight: 500;
+}
+
+.day-number {
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+/* Meeting indicator (dot) */
+.meeting-indicator {
+  width: 5px;
+  height: 5px;
+  background-color: #1a73e8;
+  border-radius: 50%;
+  margin-top: 3px;
+}
+
+/* Calendar Footer */
+.calendar-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.calendar-btn {
+  background: none;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.2s;
+}
+
+.calendar-today-btn {
+  color: #1a73e8;
+}
+
+.calendar-full-btn {
+  color: #555;
+}
+
+.calendar-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.calendar-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 252px; /* Same height as the 6 rows of calendar days */
+  font-size: 0.9rem;
+  color: #777;
+}
+
+/* Full Calendar View Styles */
+.calendar-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.calendar {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.calendar-weekdays {
+  font-weight: bold;
+}
+
+.calendar .calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  min-height: 600px;
+}
+
+.calendar .calendar-day {
+  padding: 10px;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.calendar .day-meetings {
+  margin-top: 5px;
+  width: 100%;
+}
+
+.calendar .meeting-indicator {
+  background-color: #1a73e8;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  margin-bottom: 2px;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
 /* Custom Button Styles */
 .custom-button {
   padding: 10px 16px;
@@ -165,7 +409,8 @@ button {
   margin-right: 8px;
 }
 
-.login-button, .signup-button {
+.login-button,
+.signup-button {
   width: 100%;
   margin-top: 20px;
   color: #3498db;
@@ -181,7 +426,7 @@ button {
 }
 
 .cancel-button:hover {
-  background-color:  #c0392b;
+  background-color: #c0392b;
   /* #7f8c8d; */
 }
 
@@ -299,17 +544,29 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-evenly;
-  height: 85vh;
+  /* justify-content: space-evenly; */
+  /* height: 85vh; */
   /* padding: 0 20px; */
+  justify-content: center; 
+  height: 100vh; 
+  width: 100%; 
   background: linear-gradient(to right, #2c3e50, #4ca1af);
   color: white;
-  margin: auto;
+  /* margin: auto; */
+  margin: 0; 
+  padding: 0;
+  box-sizing: border-box; 
+  position: fixed; 
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 .landing-content {
   max-width: 1000px;
   text-align: center;
+  padding: 0 20px;
   /* gap: 20px; */
   /* justify-content: space-between; */
   /* min-height: 300px; */
@@ -332,7 +589,8 @@ button {
   gap: 20px;
 }
 
-.signup-btn, .login-btn {
+.signup-btn,
+.login-btn {
   width: 150px;
   height: 50px;
   border-radius: 4px;
@@ -379,8 +637,8 @@ button {
   margin-bottom: 20px;
 }
 
-
-.login-container h1, .signup-container h1 {
+.login-container h1,
+.signup-container h1 {
   text-align: center;
 }
 
@@ -388,7 +646,6 @@ button {
   text-align: center;
   /* margin-top: 20px; */
 }
-
 
 /* Home Page Styles */
 .home-container {
@@ -433,7 +690,8 @@ button {
   overflow: hidden;
 }
 
-.meetings-table th, .meetings-table td {
+.meetings-table th,
+.meetings-table td {
   padding: 12px 15px;
   text-align: left;
   border-bottom: 1px solid #dce0e3;
@@ -521,7 +779,6 @@ button {
 .create-meeting-button:hover {
   background-color: #27ae60;
 }
-
 
 /* Meeting Form Styles */
 .meeting-form-container {
@@ -688,7 +945,7 @@ button {
   .meeting-content {
     flex-direction: column;
   }
-  
+
   .info-sections {
     flex-direction: column;
     gap: 20px;
@@ -738,3 +995,186 @@ button {
   margin-right: 5px;
 }
 
+.show-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.calendar-pg-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: white;
+}
+
+.calendar-pg-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.c-back-button {
+  background: none;
+  border: none;
+  color: #555;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.c-back-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.calendar-pg-container h1 {
+  margin: 15px 0;
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.calendar-pg-nav {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.calendar-pg-container .calendar-pg-nav h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.calendar-pg-nav-button {
+  background: none;
+  border: none;
+  color: #555;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.calendar-pg-nav-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.calendar-pg-calendar {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.calendar-pg-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.calendar-pg-weekday {
+  text-align: center;
+  padding: 10px 0;
+  font-weight: 600;
+  color: #555;
+}
+
+.calendar-pg-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  min-height: 600px;
+}
+
+.calendar-pg-day {
+  min-height: 100px;
+  padding: 8px;
+  border-bottom: 1px solid #f0f0f0;
+  border-right: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.calendar-pg-day:hover {
+  background-color: #f5f7fa;
+}
+
+.calendar-pg-day-number {
+  font-size: 1rem;
+  margin-bottom: 5px;
+}
+
+.calendar-pg-day-meetings {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.calendar-meeting-indicator {
+  background-color: #1a73e8;
+  color: white;
+  padding: 3px 6px;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.calendar-pg-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  font-size: 1rem;
+  color: #777;
+}
+
+.filter-notice {
+  background-color: #f0f7ff;
+  border: 1px solid #cce5ff;
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.filter-notice p {
+  margin: 0;
+  color: #0066cc;
+  font-weight: 500;
+}
+
+.filter-notice button {
+  background-color: #0066cc;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.filter-notice button:hover {
+  background-color: #0052a3;
+}

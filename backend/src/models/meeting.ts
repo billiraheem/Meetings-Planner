@@ -5,13 +5,15 @@ export interface Meeting extends Document {
     startTime: Date;
     endTime: Date;
     participants: string[];
+    userId?: mongoose.Types.ObjectId;
 }
 
 const meetingSchema = new Schema<Meeting>({
     title: String,
     startTime: Date,
     endTime: Date,
-    participants: [String]
+    participants: [String],
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Users', required: true }
 });
 
 const Meeting = mongoose.model<Meeting>('Meeting', meetingSchema);

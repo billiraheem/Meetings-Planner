@@ -32,14 +32,29 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = __importStar(require("mongoose"));
-const meetingSchema = new mongoose_1.Schema({
-    title: String,
-    startTime: Date,
-    endTime: Date,
-    participants: [String],
-    userId: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'Users', required: true }
+const crypto_1 = __importDefault(require("crypto"));
+const dotenv = __importStar(require("dotenv"));
+dotenv.config();
+const secret = process.env.PAYSTACK_SECRET_KEY;
+if (!secret) {
+    console.log("wrong key");
+    process.exit(1);
+}
+const body = JSON.stringify({
+    event: 'charge.success',
+    data: {
+        reference: "x3cfn41yxy",
+        amount: 100000,
+        customer: { email: 'balikisraheem2002@gmail.com' },
+        status: 'success',
+        metadata: {
+            userId: "67fab5d367a5e1e71c31c0e2"
+        }
+    }
 });
-const Meeting = mongoose_1.default.model('Meeting', meetingSchema);
-exports.default = Meeting;
+const hash = crypto_1.default.createHmac('sha512', secret).update(body).digest('hex');
+console.log('Signature:', hash);

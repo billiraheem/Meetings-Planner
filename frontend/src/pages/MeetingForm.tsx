@@ -141,36 +141,36 @@ export const MeetingForm: React.FC = () => {
     };
 
     // Check if a field is valid
-    const isFieldValid = (fieldName: string): boolean => {
-        return formik.touched[fieldName as keyof typeof formik.touched] === true && 
-               !formik.errors[fieldName as keyof typeof formik.errors];
-    };
+    // const isFieldValid = (fieldName: string): boolean => {
+    //     return formik.touched[fieldName as keyof typeof formik.touched] === true && 
+    //            !formik.errors[fieldName as keyof typeof formik.errors];
+    // };
 
     // Check if a field should be disabled
-    const shouldFieldBeDisabled = (fieldName: string): boolean => {
-        // For editing mode, don't disable fields
-        if (isEditing) return false;
+    // const shouldFieldBeDisabled = (fieldName: string): boolean => {
+    //     // For editing mode, don't disable fields
+    //     if (isEditing) return false;
         
-        switch (fieldName) {
-            case 'title':
-                return false; // First field is always enabled
-            case 'startDate':
-                return !isFieldValid('title');
-            case 'startTime':
-                return !isFieldValid('title') || !isFieldValid('startDate');
-            case 'endDate':
-                return !isFieldValid('title') || !isFieldValid('startDate') || !isFieldValid('startTime');
-            case 'endTime':
-                return !isFieldValid('title') || !isFieldValid('startDate') || 
-                       !isFieldValid('startTime') || !isFieldValid('endDate');
-            case 'participants':
-                return !isFieldValid('title') || !isFieldValid('startDate') || 
-                       !isFieldValid('startTime') || !isFieldValid('endDate') || 
-                       !isFieldValid('endTime');
-            default:
-                return false;
-        }
-    };
+    //     switch (fieldName) {
+    //         case 'title':
+    //             return false; // First field is always enabled
+    //         case 'startDate':
+    //             return !isFieldValid('title');
+    //         case 'startTime':
+    //             return !isFieldValid('title') || !isFieldValid('startDate');
+    //         case 'endDate':
+    //             return !isFieldValid('title') || !isFieldValid('startDate') || !isFieldValid('startTime');
+    //         case 'endTime':
+    //             return !isFieldValid('title') || !isFieldValid('startDate') || 
+    //                    !isFieldValid('startTime') || !isFieldValid('endDate');
+    //         case 'participants':
+    //             return !isFieldValid('title') || !isFieldValid('startDate') || 
+    //                    !isFieldValid('startTime') || !isFieldValid('endDate') || 
+    //                    !isFieldValid('endTime');
+    //         default:
+    //             return false;
+    //     }
+    // };
 
     if (initialLoading) {
         return <div className="loading">Loading meeting data...</div>;
@@ -194,7 +194,7 @@ export const MeetingForm: React.FC = () => {
                     onBlur={formik.handleBlur}
                     label="Meeting Title"
                     error={formik.touched.title ? formik.errors.title : ''}
-                    disabled={shouldFieldBeDisabled('title')}
+                    // disabled={shouldFieldBeDisabled('title')}
                     required
                 />
 
@@ -208,7 +208,7 @@ export const MeetingForm: React.FC = () => {
                             onBlur={formik.handleBlur}
                             label="Start Date"
                             error={formik.touched.startDate ? formik.errors.startDate : ''}
-                            disabled={shouldFieldBeDisabled('startDate')}
+                            // disabled={shouldFieldBeDisabled('startDate')}
                             required
                         />
                     </div>
@@ -221,7 +221,7 @@ export const MeetingForm: React.FC = () => {
                             onBlur={formik.handleBlur}
                             label="Start Time"
                             error={formik.touched.startTime ? formik.errors.startTime : ''}
-                            disabled={shouldFieldBeDisabled('startTime')}
+                            // disabled={shouldFieldBeDisabled('startTime')}
                             required
                         />
                     </div>
@@ -237,7 +237,7 @@ export const MeetingForm: React.FC = () => {
                             onBlur={formik.handleBlur}
                             label="End Date"
                             error={formik.touched.endDate ? formik.errors.endDate : ''}
-                            disabled={shouldFieldBeDisabled('endDate')}
+                            // disabled={shouldFieldBeDisabled('endDate')}
                             required
                         />
                     </div>
@@ -250,7 +250,7 @@ export const MeetingForm: React.FC = () => {
                             onBlur={formik.handleBlur}
                             label="End Time"
                             error={formik.touched.endTime ? formik.errors.endTime : ''}
-                            disabled={shouldFieldBeDisabled('endTime')}
+                            // disabled={shouldFieldBeDisabled('endTime')}
                             required
                         />
                     </div>
@@ -265,7 +265,7 @@ export const MeetingForm: React.FC = () => {
                     label="Participants (comma separated)"
                     placeholder="John Doe, Jane Smith"
                     error={formik.touched.participants ? formik.errors.participants : ''}
-                    disabled={shouldFieldBeDisabled('participants')}
+                    // disabled={shouldFieldBeDisabled('participants')}
                     required
                 />
 

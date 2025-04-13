@@ -7,7 +7,7 @@ import { globalResponseCodes } from '../services/responseCode';
 
 export const handleSignup = async (req: Request, res: Response) => {
   try {
-    const { name, email, password, confirmPassword, isAdmin } = req.body;
+    const { name, email, password, confirmPassword, isAdmin, subscription } = req.body;
 
     if (!name || !email || !password || !confirmPassword) {
       res.status(400).json({ Error: true, errorMessage: 'All fields are required', responseCode: globalResponseCodes.BAD_REQUEST });
@@ -33,7 +33,7 @@ export const handleSignup = async (req: Request, res: Response) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt); //decrpt password
     
-    const newUser = new User({ name, email, password: hashedPassword, isAdmin: isAdmin || false }); 
+    const newUser = new User({ name, email, password: hashedPassword, isAdmin: isAdmin || false, subscription: subscription || "free" }); 
     await newUser.save();
 
     res.status(201).json({ Success: true, responseMessage: 'User registered successfully', responseCode: globalResponseCodes.CREATED, data: newUser })

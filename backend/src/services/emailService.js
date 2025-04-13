@@ -32,6 +32,15 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -60,7 +69,7 @@ transporter.verify((error, success) => {
     }
 });
 // Email when meeting is created
-const sendMeetingCreatedEmail = async (email, meeting) => {
+const sendMeetingCreatedEmail = (email, meeting) => __awaiter(void 0, void 0, void 0, function* () {
     const formattedStartTime = meeting.startTime.toLocaleString('en-US', {
         weekday: 'long',
         year: 'numeric',
@@ -75,7 +84,7 @@ const sendMeetingCreatedEmail = async (email, meeting) => {
         minute: '2-digit',
         timeZoneName: 'short'
     });
-    await transporter.sendMail({
+    yield transporter.sendMail({
         from: process.env.EMAIL_USER,
         to: email,
         subject: `Meeting created: ${meeting.title}`,
@@ -93,10 +102,10 @@ const sendMeetingCreatedEmail = async (email, meeting) => {
     `,
     });
     console.log(`Creation email sent to ${email}`);
-};
+});
 exports.sendMeetingCreatedEmail = sendMeetingCreatedEmail;
 // Reminder email 10 minutes before meeting
-const sendMeetingReminderEmail = async (email, meeting) => {
+const sendMeetingReminderEmail = (email, meeting) => __awaiter(void 0, void 0, void 0, function* () {
     const formattedStartTime = meeting.startTime.toLocaleString('en-US', {
         weekday: 'long',
         year: 'numeric',
@@ -106,7 +115,7 @@ const sendMeetingReminderEmail = async (email, meeting) => {
         minute: '2-digit',
         timeZoneName: 'short'
     });
-    await transporter.sendMail({
+    yield transporter.sendMail({
         from: process.env.EMAIL_USER,
         to: email,
         subject: `Reminder: ${meeting.title} starts in 10 minutes`,
@@ -123,7 +132,7 @@ const sendMeetingReminderEmail = async (email, meeting) => {
     `,
     });
     console.log(`Reminder email sent to ${email}`);
-};
+});
 exports.sendMeetingReminderEmail = sendMeetingReminderEmail;
 // Schedule reminder email
 const scheduleMeetingReminder = (email, meeting) => {
@@ -138,16 +147,16 @@ const scheduleMeetingReminder = (email, meeting) => {
     // }
     // console.log(`Scheduling reminder for meeting ${meeting.title} to be sent in ${Math.floor(delay / 60000)} minutes`);
     if (delay > 0) {
-        setTimeout(async () => {
+        setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
             try {
-                await (0, exports.sendMeetingReminderEmail)(email, meeting)
+                yield (0, exports.sendMeetingReminderEmail)(email, meeting)
                     .then(() => console.log(`Reminder sent for meeting ${meeting.title}`))
                     .catch(error => console.error(`Failed to send reminder for meeting ${meeting.title}:`, error));
             }
             catch (error) {
                 console.error('Error sending reminder email:', error);
             }
-        }, delay);
+        }), delay);
         console.log(`Reminder scheduled for ${email} at ${new Date(tenMinutesBefore).toLocaleString()}`);
     }
     else {

@@ -32,6 +32,15 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -47,7 +56,7 @@ const REFRESH_SECRET = process.env.REFRESH_TOKEN;
 const IDLE_TIMEOUT = 15 * 60 * 1000;
 // track user's activity
 const userLastActivity = {};
-const authenticateUser = async (req, res, next) => {
+const authenticateUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         res.status(401).json({ error: 'Unauthorized' });
@@ -60,7 +69,7 @@ const authenticateUser = async (req, res, next) => {
     }
     try {
         const decoded = jsonwebtoken_1.default.verify(token, ACCESS_SECRET); //as DecodedToken;
-        const user = await user_1.default.findById(decoded.userId);
+        const user = yield user_1.default.findById(decoded.userId);
         // console.log('User object from database:', user)
         if (!user) {
             res.status(404).json({ error: "User not found" });
@@ -79,30 +88,31 @@ const authenticateUser = async (req, res, next) => {
         res.status(403).json({ error: "Invalid token" });
         return;
     }
-};
+});
 exports.authenticateUser = authenticateUser;
-const refreshTokenMiddleware = async (req, res, next) => {
+const refreshTokenMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
         res.status(401).json({ error: "Refresh token is missing" });
     }
     try {
         const decoded = jsonwebtoken_1.default.verify(refreshToken, REFRESH_SECRET);
-        const user = await user_1.default.findById(decoded.userId);
+        const user = yield user_1.default.findById(decoded.userId);
         if (!user || user.refreshToken !== refreshToken) {
             res.status(403).json({ error: "Invalid refresh token" });
             return;
         }
         if (Date.now() - (userLastActivity[user._id.toString()] || 0) > IDLE_TIMEOUT) {
             user.refreshToken = "";
-            await user.save();
+            yield user.save();
             res.status(401).json({ error: "Session expired. Please log in again." });
         }
-        const newAccessToken = (0, tokenService_1.generateAccessToken)(user._id.toString(), user.isAdmin ?? false);
+        const newAccessToken = (0, tokenService_1.generateAccessToken)(user._id.toString(), (_a = user.isAdmin) !== null && _a !== void 0 ? _a : false);
         res.status(200).json({ accessToken: newAccessToken });
     }
     catch (error) {
         res.status(403).json({ error: "Invalid refresh token" });
     }
-};
+});
 exports.refreshTokenMiddleware = refreshTokenMiddleware;

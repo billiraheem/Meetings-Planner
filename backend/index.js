@@ -17,10 +17,12 @@ app.use(CORS_1.corsMiddleware);
 app.use(body_parser_1.default.json());
 app.use((0, helmet_1.default)());
 app.use((0, cookie_parser_1.default)());
-//install helmet, cors and swap server with my index
+// Special handling for Paystack webhook which needs raw body
+// app.use('/api/payments/webhook', express.raw({ type: 'application/json' }));
 // Routes
 app.use('/api/auth', authRoute_1.default);
 app.use('/api/meetings', meetingRoute_1.default);
+// app.use('/api/payments', paystackRoutes)
 exports.default = app;
 // import { server } from "./src/server/server";
 // const PORT = process.env.PORT || 8080;
